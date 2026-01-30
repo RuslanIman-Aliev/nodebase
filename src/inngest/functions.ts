@@ -14,12 +14,22 @@ export const execute = inngest.createFunction(
       model: google("gemini-2.5-flash"),
       system: "You are a helpful assistant that helps users with their tasks.",
       prompt: "2+2",
+      experimental_telemetry:{
+        isEnabled:true,
+        recordInputs:true,
+        recordOutputs:true
+      }
     });
 
      const { steps: openAI } = await step.ai.wrap("openai-generate-text", generateText, {
       model: openai("gpt-4o"),
       system: "You are a helpful assistant that helps users with their tasks.",
       prompt: "2+2",
+      experimental_telemetry:{
+        isEnabled:true,
+        recordInputs:true,
+        recordOutputs:true
+      }
     });
 
     return {
