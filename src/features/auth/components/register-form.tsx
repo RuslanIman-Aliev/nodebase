@@ -1,9 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,11 +16,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import z from "zod";
 
 const registerSchema = z
   .object({
@@ -53,19 +54,22 @@ export function RegisterForm() {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-    await authClient.signUp.email({
-      name: data.email,
-      email: data.email,
-      password: data.password,
-      callbackURL: "/",
-    },{
-      onSuccess:()=>{
-        router.push("/");
+    await authClient.signUp.email(
+      {
+        name: data.email,
+        email: data.email,
+        password: data.password,
+        callbackURL: "/",
       },
-      onError:(error)=>{
-        toast.error("Registration error:" + error.error.message);
-      }
-    });
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (error) => {
+          toast.error("Registration error:" + error.error.message);
+        },
+      },
+    );
   };
 
   const isPending = form.formState.isSubmitting;
@@ -87,6 +91,12 @@ export function RegisterForm() {
                       type="button"
                       disabled={isPending}
                     >
+                      <Image
+                        src="/logos/github.svg"
+                        alt="GitHub Logo"
+                        width={20}
+                        height={20}
+                      />
                       Continue with Github
                     </Button>
                     <Button
@@ -95,6 +105,12 @@ export function RegisterForm() {
                       type="button"
                       disabled={isPending}
                     >
+                      <Image
+                        src="/logos/google.svg"
+                        alt="Google Logo"
+                        width={20}
+                        height={20}
+                      />
                       Continue with Google
                     </Button>
                   </div>
