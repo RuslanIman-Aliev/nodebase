@@ -1,11 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { NodeType } from "@/generated/prisma";
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import { useCallback } from "react";
-import { NodeType } from "@/generated/prisma";
 import { GlobeIcon, MousePointerIcon } from "lucide-react";
+import { useCallback } from "react";
+import { toast } from "sonner";
+import { Separator } from "./ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -14,8 +16,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Separator } from "./ui/separator";
-import { toast } from "sonner";
 
 export type NodeTypeOption = {
   label: string;
