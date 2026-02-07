@@ -1,3 +1,5 @@
+"use client";
+
 import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -20,7 +22,7 @@ export const useHasActiveSubscription = () => {
 
   return {
     hasActiveSubscription,
-    subcsription: customerState?.activeSubscriptions?.[0],
+    subscription: customerState?.activeSubscriptions?.[0],
     isLoading,
     ...rest,
   };
