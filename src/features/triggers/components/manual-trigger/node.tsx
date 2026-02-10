@@ -10,7 +10,8 @@ export const ManualTriggerNode = memo((props: NodeProps) => {
     setOpen(true)
   }
 
-  const nodeStatus = "loading"
+  const nodeStatus = undefined;
+  
   return (
     <>
     <ManualTriggerDialog open={open} onOpenChange={setOpen} />
