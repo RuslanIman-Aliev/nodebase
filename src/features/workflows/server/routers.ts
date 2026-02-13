@@ -10,6 +10,7 @@ import {
   premiumProcedure,
   protectedProcedure,
 } from "../../../trpc/init";
+import { sendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
@@ -20,10 +21,8 @@ export const workflowsRouter = createTRPCRouter({
         //  include: { nodes: true, connections: true },
       });
 
-      await inngest.send({
-        name: "workflows/execute.workflow",
-        data: { workflowId: workflow.id },
-       });
+      await sendWorkflowExecution({ workflowId: input.id });
+
       return workflow;
     }),
   create: premiumProcedure.mutation(({ ctx }) => {

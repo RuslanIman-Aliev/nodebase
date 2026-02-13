@@ -80,116 +80,109 @@ export function RegisterForm() {
         <CardHeader className="text-center">
           <CardTitle>Get started</CardTitle>
           <CardDescription>Create your account to get started</CardDescription>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="grid gap-6">
-                  <div className="flex flex-col gap-4">
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      type="button"
-                      disabled={isPending}
-                    >
-                      <Image
-                        src="/logos/github.svg"
-                        alt="GitHub Logo"
-                        width={20}
-                        height={20}
-                      />
-                      Continue with Github
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      type="button"
-                      disabled={isPending}
-                    >
-                      <Image
-                        src="/logos/google.svg"
-                        alt="Google Logo"
-                        width={20}
-                        height={20}
-                      />
-                      Continue with Google
-                    </Button>
-                  </div>
-                  <div className="grid gap-6">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="m@example.com"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="password"
-                              placeholder="Your password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="password"
-                              placeholder="Confirm your password"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button
-                      className="w-full"
-                      type="submit"
-                      disabled={isPending}
-                    >
-                      {isPending ? "Registering..." : "Register"}
-                    </Button>
-                  </div>
-                  <div className="text-center text-sm">
-                    Already have an account?{" "}
-                    <Link
-                      href="/login"
-                      className="underline underline-offset-4"
-                    >
-                      Login
-                    </Link>
-                  </div>
-                </div>
-              </form>
-            </Form>
-          </CardContent>
         </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className="grid gap-6">
+                <div className="flex flex-col gap-4">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    type="button"
+                    disabled={isPending}
+                  >
+                    <Image
+                      src="/logos/github.svg"
+                      alt="GitHub Logo"
+                      width={20}
+                      height={20}
+                    />
+                    Continue with Github
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    type="button"
+                    disabled={isPending}
+                  >
+                    <Image
+                      src="/logos/google.svg"
+                      alt="Google Logo"
+                      width={20}
+                      height={20}
+                    />
+                    Continue with Google
+                  </Button>
+                </div>
+                <div className="grid gap-6">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="m@example.com"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Your password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Confirm your password"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button className="w-full" type="submit" disabled={isPending}>
+                    {isPending ? "Registering..." : "Register"}
+                  </Button>
+                </div>
+                <div className="text-center text-sm">
+                  Already have an account?{" "}
+                  <Link href="/login" className="underline underline-offset-4">
+                    Login
+                  </Link>
+                </div>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
       </Card>
     </div>
   );
