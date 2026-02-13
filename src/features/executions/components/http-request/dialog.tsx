@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,7 +33,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 
 const formSchema = z.object({
-  endpoint: z.url("Please enter a valid URL"),
+  endpoint: z.string().min(1, "Please enter a valid URL"),
   method: z.enum(["GET", "POST", "PUT", "DELETE", "PATCH"]),
   body: z.string().optional(),
   variableName: z
