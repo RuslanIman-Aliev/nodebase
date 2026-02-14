@@ -5,13 +5,19 @@ import { stripeTriggerExecutor } from "@/features/triggers/components/stripe-tri
 import { NodeType } from "@/generated/prisma";
 import { httpRequestExecutor } from "../components/http-request/executor";
 import { NodeExecutor } from "../types";
+import { geminiExecutor } from "../components/gemini/executor";
+import { openAiExecutor } from "../components/openai/executor";
+import { anthropicExecutor } from "../components/anthropic/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
   [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
   [NodeType.HTTP_REQUEST]: httpRequestExecutor,
   [NodeType.INITIAL]: manualTriggerExecutor,
   [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
-  [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor, 
+  [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
+  [NodeType.GEMINI]: geminiExecutor,
+  [NodeType.ANTHROPIC]: anthropicExecutor,
+  [NodeType.OPENAI]: openAiExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {
