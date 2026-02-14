@@ -38,6 +38,13 @@ const triggerNodes: NodeTypeOption[] = [
     description: "Trigger the workflow when a Google Form is submitted.",
     icon: "/logos/googleform.svg",
   },
+
+   {
+    type: NodeType.STRIPE_TRIGGER,
+    label: "Stripe Trigger",
+    description: "Trigger the workflow when a Stripe event occurs.",
+    icon: "/logos/stripe.svg",
+  },
 ];
 
 const executionNodes: NodeTypeOption[] = [
