@@ -70,7 +70,21 @@ const executionNodes: NodeTypeOption[] = [
     type: NodeType.ANTHROPIC,
     label: "Anthropic",
     description: "Use the Anthropic API to generate content.",
-    icon: "/logos/anthropic.svg",
+    icon: "/logos/antropic.svg",
+  },
+
+  {
+    type: NodeType.DISCORD,
+    label: "Discord",
+    description: "Use the Discord API to generate content.",
+    icon: "/logos/discord.svg",
+  },
+
+  {
+    type: NodeType.SLACK,
+    label: "Slack",
+    description: "Use the Slack API to generate content.",
+    icon: "/logos/slack.svg",
   },
 ];
 
