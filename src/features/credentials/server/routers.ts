@@ -7,6 +7,7 @@ import {
   premiumProcedure,
   protectedProcedure,
 } from "../../../trpc/init";
+import { encrypt } from "@/lib/encryption";
 
 export const credentialsRouter = createTRPCRouter({
   create: premiumProcedure
@@ -23,7 +24,7 @@ export const credentialsRouter = createTRPCRouter({
         data: {
           name,
           type,
-          value,
+          value: encrypt(value),
           userId: ctx.auth.user.id,
         },
       });
@@ -49,7 +50,7 @@ export const credentialsRouter = createTRPCRouter({
 
       return prisma.credential.update({
         where: { id, userId: ctx.auth.user.id },
-        data: { name, value, type },
+        data: { name, value: encrypt(value), type },
       });
     }),
 
@@ -106,17 +107,17 @@ export const credentialsRouter = createTRPCRouter({
         hasPreviousPage,
       };
     }),
-  
-    getByType: protectedProcedure
-      .input(z.object({ type: z.enum(CredentialType) }))
-      .query(({ ctx, input }) => {
-        const { type } = input;
-        return prisma.credential.findMany({
-          where: {
-            userId: ctx.auth.user.id,
-            type,
-          },
-          orderBy: { updatedAt: "desc" },
-        });
-      }),
+
+  getByType: protectedProcedure
+    .input(z.object({ type: z.enum(CredentialType) }))
+    .query(({ ctx, input }) => {
+      const { type } = input;
+      return prisma.credential.findMany({
+        where: {
+          userId: ctx.auth.user.id,
+          type,
+        },
+        orderBy: { updatedAt: "desc" },
+      });
+    }),
 });
