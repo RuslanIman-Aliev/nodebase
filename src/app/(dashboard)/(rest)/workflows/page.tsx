@@ -21,6 +21,7 @@ const Page = async ({ searchParams }: Props) => {
 
   const params = await workflowsParamsLoader(searchParams);
   prefetchWorkflows(params);
+  
   return (
     <WorkflowsContainer>
       <HydrateClient>

@@ -1,6 +1,6 @@
 import { PAGINATION } from "@/config/constans";
 import { NodeType } from "@/generated/prisma";
-import { inngest } from "@/inngest/client";
+import { sendWorkflowExecution } from "@/inngest/utils";
 import prisma from "@/lib/db";
 import type { Edge, Node } from "@xyflow/react";
 import { generateSlug } from "random-word-slugs";
@@ -10,7 +10,6 @@ import {
   premiumProcedure,
   protectedProcedure,
 } from "../../../trpc/init";
-import { sendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
@@ -18,7 +17,6 @@ export const workflowsRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const workflow = await prisma.workflow.findUniqueOrThrow({
         where: { id: input.id, userId: ctx.auth.user.id },
-        //  include: { nodes: true, connections: true },
       });
 
       await sendWorkflowExecution({ workflowId: input.id });

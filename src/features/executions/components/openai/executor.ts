@@ -1,9 +1,10 @@
 import type { NodeExecutor } from "@/features/executions/types";
-import Handlebars from "handlebars";
-import { NonRetriableError } from "inngest";
+import { openAiRequestChannel } from "@/inngest/channels/openai";
+import prisma from "@/lib/db";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
-import { openAiRequestChannel } from "@/inngest/channels/openai";
+import Handlebars from "handlebars";
+import { NonRetriableError } from "inngest";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -17,6 +18,7 @@ type OpenAiData = {
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
@@ -55,6 +57,18 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
     throw new NonRetriableError("User prompt is required to generate text");
   }
 
+  if (!data.credentialId) {
+    await publish(
+      openAiRequestChannel().status({
+        nodeId,
+        status: "error",
+      }),
+    );
+    throw new NonRetriableError(
+      "Credential ID is required to authenticate with OpenAI",
+    );
+  }
+
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant.";
@@ -63,15 +77,26 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
     ? Handlebars.compile(data.userPrompt)(context)
     : "";
 
-  const credentialValue = process.env.OPENAI_API_KEY;
+    const credential = await step.run("get-credential", () => {
+        return prisma.credential.findUnique({
+          where: {
+            id: data.credentialId!,
+          },
+        });
+      });
+    
+      if (!credential) {
+        throw new NonRetriableError("Credential not found");
+      }
+    
 
-  const google = createOpenAI({
-    apiKey: credentialValue,
+  const openAi = createOpenAI({
+    apiKey: credential.value,
   });
 
   try {
     const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
-      model: google(data.model || "gpt-4"),
+      model: openAi(data.model || "gpt-4"),
       system: systemPrompt,
       prompt: userPrompt,
       experimental_telemetry: {
