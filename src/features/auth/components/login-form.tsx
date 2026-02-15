@@ -44,6 +44,42 @@ export function LoginForm() {
     },
   });
 
+  const signInGithub = async () => {
+    await authClient.signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (error) => {
+          toast.error(
+            error.error.message || "An error occurred during GitHub sign-in",
+          );
+        },
+      },
+    );
+  };
+
+   const signInGoogle = async () => {
+    await authClient.signIn.social(
+      {
+        provider: "google",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (error) => {
+          toast.error(
+            error.error.message || "An error occurred during Google sign-in",
+          );
+        },
+      },
+    );
+  };
+
   const onSubmit = async (data: LoginFormValues) => {
     await authClient.signIn.email(
       {
@@ -56,7 +92,7 @@ export function LoginForm() {
           router.push("/");
         },
         onError: (error) => {
-          toast.error(error.error.message);
+          toast.error(error.error.message || "An error occurred during login");
         },
       },
     );
@@ -81,6 +117,7 @@ export function LoginForm() {
                     className="w-full"
                     type="button"
                     disabled={isPending}
+                    onClick={signInGithub}
                   >
                     <Image
                       src="/logos/github.svg"
@@ -95,6 +132,7 @@ export function LoginForm() {
                     className="w-full"
                     type="button"
                     disabled={isPending}
+                    onClick={signInGoogle}
                   >
                     <Image
                       src="/logos/google.svg"
