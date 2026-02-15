@@ -1,9 +1,10 @@
 import type { NodeExecutor } from "@/features/executions/types";
+import { anthropicRequestChannel } from "@/inngest/channels/anthropic";
+import prisma from "@/lib/db";
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { generateText } from "ai";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
-import {createAnthropic} from "@ai-sdk/anthropic";
-import { generateText } from "ai";
-import { anthropicRequestChannel } from "@/inngest/channels/anthropic";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -17,6 +18,7 @@ type AnthropicData = {
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
@@ -55,6 +57,15 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     throw new NonRetriableError("User prompt is required to generate text");
   }
 
+  if (!data.credentialId) {
+    await publish(
+      anthropicRequestChannel().status({
+        nodeId,
+        status: "error",
+      }),
+    );
+    throw new NonRetriableError("Credential is required to generate text");
+  }
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant.";
@@ -63,23 +74,38 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     ? Handlebars.compile(data.userPrompt)(context)
     : "";
 
-  const credentialValue = process.env.ANTHROPIC_API_KEY;
+    const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId!,
+      },
+    });
+  });
+
+  if (!credential) {
+    throw new NonRetriableError("Credential not found");
+  }
+
 
   const anthropic = createAnthropic({
-    apiKey: credentialValue,
+    apiKey: credential.value,
   });
 
   try {
-    const { steps } = await step.ai.wrap("anthropic-generate-text", generateText, {
-      model: anthropic(data.model || "claude-opus-4-0" ),
-      system: systemPrompt,
-      prompt: userPrompt,
-      experimental_telemetry: {
-        isEnabled: true,
-        recordInputs: true,
-        recordOutputs: true,
+    const { steps } = await step.ai.wrap(
+      "anthropic-generate-text",
+      generateText,
+      {
+        model: anthropic(data.model || "claude-opus-4-0"),
+        system: systemPrompt,
+        prompt: userPrompt,
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       },
-    });
+    );
     const text =
       steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
 

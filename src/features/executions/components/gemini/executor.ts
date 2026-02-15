@@ -1,9 +1,10 @@
 import type { NodeExecutor } from "@/features/executions/types";
 import { geminiRequestChannel } from "@/inngest/channels/gemini";
-import Handlebars from "handlebars";
-import { NonRetriableError } from "inngest";
+import prisma from "@/lib/db";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
+import Handlebars from "handlebars";
+import { NonRetriableError } from "inngest";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -17,6 +18,7 @@ type GeminiData = {
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 export const geminiExecutor: NodeExecutor<GeminiData> = async ({
@@ -45,16 +47,24 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     );
   }
 
-   if (!data.userPrompt) {
+  if (!data.userPrompt) {
     await publish(
       geminiRequestChannel().status({
         nodeId,
         status: "error",
       }),
     );
-    throw new NonRetriableError(
-      "User prompt is required to generate text",
+    throw new NonRetriableError("User prompt is required to generate text");
+  }
+
+  if (!data.credentialId) {
+    await publish(
+      geminiRequestChannel().status({
+        nodeId,
+        status: "error",
+      }),
     );
+    throw new NonRetriableError("Credential is required to generate text");
   }
 
   const systemPrompt = data.systemPrompt
@@ -65,10 +75,20 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     ? Handlebars.compile(data.userPrompt)(context)
     : "";
 
-  const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId!,
+      },
+    });
+  });
+
+  if (!credential) {
+    throw new NonRetriableError("Credential not found");
+  }
 
   const google = createGoogleGenerativeAI({
-    apiKey: credentialValue,
+    apiKey: credential.value,
   });
 
   try {

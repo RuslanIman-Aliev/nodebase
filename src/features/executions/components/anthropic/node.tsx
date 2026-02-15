@@ -4,13 +4,14 @@ import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { memo, useState } from "react";
 import { useNodeStatus } from "../../hooks/use-node-status";
 import { BaseExecutionNode } from "../base-execution-node";
-import { fetchAnthropicRealtimeToken} from "./actions";
-import { AnthropicDialog, AnthropicFormValues} from "./dialog";
+import { fetchAnthropicRealtimeToken } from "./actions";
+import { AnthropicDialog, AnthropicFormValues } from "./dialog";
 
 type AnthropicNodeData = {
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
   variableName?: string;
 };
 
